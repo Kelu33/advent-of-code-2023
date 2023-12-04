@@ -1,0 +1,50 @@
+/* You can add global styles to this file, and also import other style files */
+
+.input-wrap {
+  position: relative;
+
+  .input {
+    width: 0;
+    aspect-ratio: 1.62;
+    overflow-y: scroll;
+    border: 1px solid black;
+    padding: .2em .4em;
+    transition: 250ms;
+  }
+
+  button {
+    position: absolute;
+    border: 1px solid black;
+  }
+
+  &.show {
+    .input {
+      width: unset;
+    }
+    button {
+      transform: translateY(-100%);
+      right: 0;
+    }
+  }
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+
+  h2 {
+    margin-right: .4em;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .btn {
+    border: 1px solid black;
+    padding: .2em .4em;
+    text-decoration: none;
+    margin-right: .4em;
+    color: black;
+  }
+}

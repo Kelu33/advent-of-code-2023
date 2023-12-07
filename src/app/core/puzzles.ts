@@ -250,9 +250,9 @@ export const puzzles: Puzzle[] = [
       this.seeds = almanac[0].slice(7).split(' ').map((s: string) => parseInt(s));
       let lowest = 0;
       this.seeds.forEach((seed: number) => {
-        this.maps.forEach((map: [number, number, number][]) => {
+        this.maps.forEach((ranges: [number, number, number][]) => {
           let mapped = false;
-          map.forEach(range => {
+          ranges.forEach(range => {
             if (!mapped && seed >= range[0] && seed <= range[0] + range[2]) {
               seed = range[1] + (seed - range[0]);
               mapped = true;
@@ -292,10 +292,10 @@ export const puzzles: Puzzle[] = [
           }
         })
       }
-      this.maps.forEach((map: [number, number, number][]) => {
+      this.maps.forEach((ranges: [number, number, number][]) => {
         notMappedSeeds = [...mappedSeeds];
         mappedSeeds = [];
-        map.forEach(range => {
+        ranges.forEach(range => {
           mapSeeds(
             notMappedSeeds,
             { start: range[0], end: range[0] + range[2] - 1 }, // WTF - 1
@@ -309,11 +309,31 @@ export const puzzles: Puzzle[] = [
   },
   {
     title: 'Wait For It',
-    solvePart1(_: string) {
-      return 'TODO'
+    solvePart1(input: string) {
+      const i = input.split('\n');
+      const times = i[0].substring(5).split(' ').filter(t => t);
+      const distances = i[1].substring(9).split(' ').filter(d => d);
+      return times.reduce((acc, t, i) => {
+        const time = parseInt(t);
+        const distance = parseInt(distances[i]);
+        let win = 0;
+        for (let start = 1; start < time; start++) {
+          win += (time - start) * start > distance ? 1 : 0;
+        }
+        return acc * win
+      }, 1);
     },
-    solvePart2(_: string) {
-      return 'TODO'
+    solvePart2(input: string) {
+      const i = input.split('\n');
+      const time = parseInt(i[0].substring(5).split(' ').join(''));
+      const distance = parseInt(i[1].substring(9).split(' ').join(''));
+      let win = 0;
+      let start = time / 2;
+      while ((time - start) * start > distance) {
+        start--;
+        win++;
+      }
+      return win * 2;
     }
   },
   {

@@ -225,7 +225,90 @@ export const puzzles: Puzzle[] = [
     }
   },
   {
-    title: '',
+    title: 'If You Give A Seed A Fertilizer',
+    maps: [],
+    seeds: [],
+    solvePart1(input: string) {
+      const almanac = input.split('\n');
+      let newMap = false;
+      let offset = -1;
+      this.maps = almanac.splice(1).reduce((acc: [number, number, number][][], line: string) => {
+        if (!line) {
+          newMap = true;
+          acc.push([]);
+          offset++;
+        } else {
+          if (newMap) {
+            newMap = false;
+          } else {
+            const range = line.split(' ');
+            acc[offset].push([parseInt(range[1]), parseInt(range[0]), parseInt(range[2])]);
+          }
+        }
+        return acc;
+      }, []).map((r: [number, number, number][]) => r.sort((a,b) => a[0] - b[0]));
+      this.seeds = almanac[0].slice(7).split(' ').map((s: string) => parseInt(s));
+      let lowest = 0;
+      this.seeds.forEach((seed: number) => {
+        this.maps.forEach((map: [number, number, number][]) => {
+          let mapped = false;
+          map.forEach(range => {
+            if (!mapped && seed >= range[0] && seed <= range[0] + range[2]) {
+              seed = range[1] + (seed - range[0]);
+              mapped = true;
+            }
+          });
+        });
+        if (!lowest || seed < lowest) lowest = seed;
+      });
+      return lowest;
+    },
+    solvePart2(_: string) {
+      interface Range { start: number, end: number }
+      let mappedSeeds: Range[] = [];
+      let notMappedSeeds: Range[] = [];
+      for (let i = 0; i < this.seeds.length; i++) {
+        mappedSeeds.push({ start: this.seeds[i], end: this.seeds[i] + this.seeds[++i] });
+      }
+      const mapSeeds = (seeds: Range[], from: Range, to: number) => {
+        notMappedSeeds = [];
+        seeds.forEach(seed => {
+          if ( seed.end < from.start ) {
+            mappedSeeds.push(seed);
+          } else if ( seed.start > from.end ) {
+            notMappedSeeds.push(seed);
+          } else {
+            if (seed.start < from.start) {
+              mappedSeeds.push({ start: seed.start, end: from.start - 1 - to });
+              seed.start = from.start;
+            }
+            if (seed.end > from.end) {
+              notMappedSeeds.push({ start: from.end + 1, end: seed.end });
+              seed.end = from.end;
+            }
+            seed.start += to;
+            seed.end += to;
+            mappedSeeds.push(seed);
+          }
+        })
+      }
+      this.maps.forEach((map: [number, number, number][]) => {
+        notMappedSeeds = [...mappedSeeds];
+        mappedSeeds = [];
+        map.forEach(range => {
+          mapSeeds(
+            notMappedSeeds,
+            { start: range[0], end: range[0] + range[2] - 1 }, // WTF - 1
+            range[1] - range[0]
+          );
+        })
+        mappedSeeds = [...mappedSeeds, ...notMappedSeeds];
+      })
+      return mappedSeeds.reduce((acc, seed) => acc.start < seed.start ? acc : seed).start;
+    }
+  },
+  {
+    title: 'Wait For It',
     solvePart1(_: string) {
       return 'TODO'
     },
@@ -234,16 +317,7 @@ export const puzzles: Puzzle[] = [
     }
   },
   {
-    title: '',
-    solvePart1(_: string) {
-      return 'TODO'
-    },
-    solvePart2(_: string) {
-      return 'TODO'
-    }
-  },
-  {
-    title: '',
+    title: 'Camel Cards',
     solvePart1(_: string) {
       return 'TODO'
     },
